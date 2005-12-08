@@ -14,7 +14,7 @@
 #     AUTHOR => q[Ricardo Signes <rjbs@cpan.org>]
 #     NAME => q[Macro::Expander]
 #     PL_FILES => {  }
-#     PREREQ_PM => { Test::More=>q[0] }
+#     PREREQ_PM => { Test::More=>q[0], Carp=>q[0] }
 #     VERSION_FROM => q[lib/Macro/Expander.pm]
 #     clean => { FILES=>q[Macro-Expander-* cover_db] }
 #     dist => { COMPRESS=>q[gzip -9f], SUFFIX=>q[gz] }
@@ -438,6 +438,7 @@ metafile :
 	$(NOECHO) $(ECHO) 'version_from: lib/Macro/Expander.pm' >> META.yml
 	$(NOECHO) $(ECHO) 'installdirs:  site' >> META.yml
 	$(NOECHO) $(ECHO) 'requires:' >> META.yml
+	$(NOECHO) $(ECHO) '    Carp:                          0' >> META.yml
 	$(NOECHO) $(ECHO) '    Test::More:                    0' >> META.yml
 	$(NOECHO) $(ECHO) '' >> META.yml
 	$(NOECHO) $(ECHO) 'distribution_type: module' >> META.yml
@@ -705,9 +706,10 @@ testdb_static :: testdb_dynamic
 ppd:
 	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0,01,0,0">' > $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <TITLE>$(DISTNAME)</TITLE>' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '    <ABSTRACT>The fantastic new Macro::Expander!</ABSTRACT>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <ABSTRACT>really simple templating for really simple templates</ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR>Ricardo Signes &lt;rjbs@cpan.org&gt;</AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="Carp" VERSION="0,0,0,0" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="Test-More" VERSION="0,0,0,0" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <OS NAME="$(OSNAME)" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="darwin-2level" />' >> $(DISTNAME).ppd

@@ -116,7 +116,10 @@ sub fast_expander {
   my $applicator = sub {
     my ($object) = @_;
 
-    while (my ($match, $macro_name) = $object =~ /([\[<] (\w+) [>\]])/x) {
+    Carp::croak "object of expansion must be a defined, non-reference scalar"
+      if not(defined $object) or ref $object;
+
+    while (my ($match, $macro_name) = $object =~ /([\[<] (\w+) [>\]])/xgc) {
       next unless my $macro = $self->get_macro($macro_name);
 
       my $expansion
@@ -130,12 +133,17 @@ sub fast_expander {
 
 =head2 C<expand_macros_in>
 
+  $expander->expand_macros_in($object, \%stash);
+
+This rewrites the content of C<$object> in place, using the expander's macros
+and the provided stash of data.
+
 =cut
 
 sub expand_macros_in {
   my ($self, $object, $stash) = @_;
 
-  Carp::croak "object of expansion must be a scalar reference"
+  Carp::croak "object of in-place expansion must be a scalar reference"
     if (not ref $object)
     or (ref $object ne 'SCALAR');
 
