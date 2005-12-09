@@ -125,6 +125,8 @@ sub register_macros {
       Carp::croak "macro name '$name' must be a string or regexp reference";
     }
   }
+
+  return $self;
 }
 
 =head2 C<get_macro>
