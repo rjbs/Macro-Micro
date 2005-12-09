@@ -63,7 +63,7 @@ sub new {
 
   my $self = bless { } => $class;
 
-  $arg{macro_format} ||= $DEFAULT_MACRO_FORMAT;
+  $arg{macro_format} = $DEFAULT_MACRO_FORMAT unless $arg{macro_format};
 
   $self->macro_format($arg{macro_format});
 

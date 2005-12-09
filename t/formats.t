@@ -11,6 +11,12 @@ my $format = qr/(\{\s*(\w+)\s*\})/;
 
 my $expander = Macro::Expander->new(macro_format => $format);
 
+eval { $expander->macro_format(undef); };
+like($@, qr/must be a regexp/, "you can't undefine the macro_format");
+
+eval { $expander->macro_format("123"); };
+like($@, qr/must be a regexp/, "you must set the macro_format to a regexp");
+
 isa_ok($expander, 'Macro::Expander');
 
 can_ok($expander, 'register_macros');
