@@ -5,9 +5,9 @@ use warnings;
 
 use Test::More 'no_plan';
 
-BEGIN { use_ok('Macro::Expander'); }
+BEGIN { use_ok('Macro::Micro'); }
 
-my $expander = Macro::Expander->new;
+my $expander = Macro::Micro->new;
 
 $expander->register_macros(
   FOO => "[BAR]",

@@ -5,11 +5,11 @@ use warnings;
 
 use Test::More 'no_plan';
 
-BEGIN { use_ok('Macro::Expander'); }
+BEGIN { use_ok('Macro::Micro'); }
 
-my $expander = Macro::Expander->new;
+my $expander = Macro::Micro->new;
 
-isa_ok($expander, 'Macro::Expander');
+isa_ok($expander, 'Macro::Micro');
 
 can_ok($expander, 'register_macros');
 

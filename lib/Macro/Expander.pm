@@ -1,4 +1,4 @@
-package Macro::Expander;
+package Macro::Micro;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use Carp ();
 
 =head1 NAME
 
-Macro::Expander - really simple templating for really simple templates
+Macro::Micro - really simple templating for really simple templates
 
 =head1 VERSION
 
@@ -21,9 +21,9 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-  use Macro::Expander;
+  use Macro::Micro;
 
-  my $expander = Macro::Expander->new;
+  my $expander = Macro::Micro->new;
 
   $expander->register_macros(
     ALIGNMENT => "Lawful Good",
@@ -46,7 +46,7 @@ concept of context and lazy evaluation.
 
 =head2 C<new>
 
-  my $expander = Macros::Expander->new(%arg);
+  my $expander = Macros::Micro->new(%arg);
 
 This method creates a new macro expander.
 
@@ -244,7 +244,7 @@ Ricardo Signes, C<< <rjbs@cpan.org> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to
-C<bug-macro-expander@rt.cpan.org>, or through the web interface at
+C<bug-macro-micro@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be
 notified of progress on your bug as I make changes.
 

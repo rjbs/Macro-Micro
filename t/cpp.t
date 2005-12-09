@@ -4,9 +4,9 @@ use warnings;
 
 use Test::More 'no_plan';
 
-BEGIN { use_ok("Macro::Expander"); }
+BEGIN { use_ok("Macro::Micro"); }
 
-my $cpp = Macro::Expander->new(macro_format => qr/^(#(\w+.*))$/m);
+my $cpp = Macro::Micro->new(macro_format => qr/^(#(\w+.*))$/m);
 
 $cpp->register_macros(
   qr/\Ainclude\s+.*/i => sub {

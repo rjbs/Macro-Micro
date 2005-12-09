@@ -5,11 +5,11 @@ use warnings;
 
 use Test::More 'no_plan';
 
-BEGIN { use_ok('Macro::Expander'); }
+BEGIN { use_ok('Macro::Micro'); }
 
 my $format = qr/(\{\s*(\w+)\s*\})/;
 
-my $expander = Macro::Expander->new(macro_format => $format);
+my $expander = Macro::Micro->new(macro_format => $format);
 
 eval { $expander->macro_format(undef); };
 like($@, qr/must be a regexp/, "you can't undefine the macro_format");
@@ -17,7 +17,7 @@ like($@, qr/must be a regexp/, "you can't undefine the macro_format");
 eval { $expander->macro_format("123"); };
 like($@, qr/must be a regexp/, "you must set the macro_format to a regexp");
 
-isa_ok($expander, 'Macro::Expander');
+isa_ok($expander, 'Macro::Micro');
 
 can_ok($expander, 'register_macros');
 
