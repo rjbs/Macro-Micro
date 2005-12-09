@@ -9,7 +9,7 @@ BEGIN { use_ok("Macro::Expander"); }
 my $cpp = Macro::Expander->new(macro_format => qr/^(#(\w+.*))$/m);
 
 $cpp->register_macros(
-  qr/include\s+.*/i => sub {
+  qr/\Ainclude\s+.*/i => sub {
     my ($macro_name) = @_;
     my ($file) = $macro_name =~ /\Ainclude\s+["<]([\/\w.]+)[>"]/;
     return "(contents of $file)"
