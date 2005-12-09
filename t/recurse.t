@@ -16,17 +16,24 @@ $expander->register_macros(
   OOO => "[FOO][BAR]",
 );
 
-my $text = <<END_TEXT;
-[FOO][BAR][OOO][BAZ]
-END_TEXT
+{
+  my $text     = "[FOO][BAR][OOO][BAZ]";
+  my $expected = "[BAR][FOO][FOO][BAR][BAZ]";
 
-my $expected = <<END_TEXT;
-[BAR][FOO][FOO][BAR][BAZ]
-END_TEXT
+  is(
+    $expander->expand_macros($text),
+    $expected,
+    "we get no stupid recursive expansion",
+  );
+}
 
-is(
-  $expander->expand_macros($text),
-  $expected,
-  "we get no stupid recursive expansion",
-);
+{
+  my $text     = "[FOO[BAR]][[OOO][BAZ]]";
+  my $expected = "[FOO[FOO]][[FOO][BAR][BAZ]]";
 
+  is(
+    $expander->expand_macros($text),
+    $expected,
+    "another goofy case of nesting and dumb brackets",
+  );
+}
