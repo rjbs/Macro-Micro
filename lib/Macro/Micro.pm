@@ -33,7 +33,7 @@ our $VERSION = '0.01';
     },
   );
 
-  $expander->expand_macros_in($character);
+  $expander->expand_macros_in($character, { race => $human_obj });
 
   # character is now a Lawful Good, 5' 6" human
 
