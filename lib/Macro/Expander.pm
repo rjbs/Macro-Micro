@@ -46,15 +46,48 @@ concept of context and lazy evaluation.
 
 =head2 C<new>
 
-  my $expander = Macros::Expander->new;
+  my $expander = Macros::Expander->new(%arg);
 
 This method creates a new macro expander.
 
+There is only one valid argument:
+
+  macro_format - this is the format for macros; see the macro_format method
+
 =cut
 
+my $DEFAULT_MACRO_FORMAT = qr/([\[<] (\w+) [>\]])/x;
+
 sub new {
-  my ($class) = @_;
-  bless {} => $class;
+  my ($class, %arg) = @_;
+
+  my $self = bless { } => $class;
+
+  $arg{macro_format} ||= $DEFAULT_MACRO_FORMAT;
+
+  $self->macro_format($arg{macro_format});
+
+  return $self;
+}
+
+=head2 C<macro_format>
+
+  $expander->macro_format( qr/.../ );
+
+This method returns the macro format regexp for the expander.
+
+=cut
+
+sub macro_format {
+  my $self = shift;
+
+  return $self->{macro_format} unless @_;
+
+  my $macro_format = shift;
+  Carp::croak "macro format must be a regexp reference"
+    unless ref $macro_format eq 'Regexp';
+
+  $self->{macro_format} = $macro_format;
 }
 
 =head2 C<register_macros>
@@ -76,7 +109,7 @@ sub register_macros {
     } elsif (ref $name eq 'Regexp') {
       $self->{macro_regexp}{$name} = [ $name, $value ];
     } else {
-      Carp::croak "macro name '$name' must be a string or regex reference";
+      Carp::croak "macro name '$name' must be a string or regexp reference";
     }
   }
 }
@@ -113,13 +146,15 @@ it.
 sub fast_expander {
   my ($self, $stash) = @_;
 
+  my $regex = $self->macro_format;
+
   my $applicator = sub {
     my ($object) = @_;
 
     Carp::croak "object of expansion must be a defined, non-reference scalar"
       if not(defined $object) or ref $object;
 
-    while (my ($match, $macro_name) = $object =~ /([\[<] (\w+) [>\]])/xgc) {
+    while (my ($match, $macro_name) = $object =~ m/$regex/gc) {
       next unless my $macro = $self->get_macro($macro_name);
 
       my $expansion

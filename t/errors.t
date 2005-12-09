@@ -21,7 +21,7 @@ $expander->register_macros(
 );
 
 eval { $expander->register_macros( \2 => "two" ); };
-like($@, qr/string or regex ref/, "you can't name a macro with a weird ref");
+like($@, qr/string or regexp ref/, "you can't name a macro with a weird ref");
 
 eval { $expander->register_macros( QUUX => qr/./ ); };
 like($@, qr/string or code ref/, "a macro value must be a string or coderef");
