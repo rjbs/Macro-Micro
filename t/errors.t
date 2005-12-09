@@ -32,11 +32,8 @@ is(
   "there is no 'HLAGH' macro even after registering some things",
 );
 
-eval { $expander->fast_expander->(); };
-like($@, qr/defined, non-ref/, "undef isn't an OK object to fast-expand");
-
 eval { $expander->fast_expander->({}); };
-like($@, qr/defined, non-ref/, "a ref isn't an OK object to fast-expand");
+like($@, qr/not be a ref/, "a ref isn't an OK object to fast-expand");
 
 my $text = "[FOO] <BAR> [BAZ]";
 

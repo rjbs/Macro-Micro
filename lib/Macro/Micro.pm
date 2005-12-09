@@ -224,8 +224,8 @@ sub fast_expander {
   my $applicator = sub {
     my ($object) = @_;
 
-    Carp::croak "object of expansion must be a defined, non-reference scalar"
-      if not(defined $object) or ref $object;
+    return unless defined $object;
+    Carp::croak "object of expansion must not be a reference" if ref $object;
 
     my $expander = sub {
       my $macro = $self->get_macro($_[1]);
