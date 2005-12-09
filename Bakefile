@@ -2,6 +2,6 @@
    PREFIX => "/icg/pkg/local/macexp",
 &>
 
-<& /install/dir, src => "perl-lib" &>
+<& /install/dir, src => "lib", dst => "perl-lib" &>
 
 <& /test &>
