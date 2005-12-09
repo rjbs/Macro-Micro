@@ -56,7 +56,7 @@ There is only one valid argument:
 
 =cut
 
-my $DEFAULT_MACRO_FORMAT = qr/([\[<] (\w+) [>\]])/x;
+my $DEFAULT_MACRO_FORMAT = qr/(?<!\\)([\[<] (\w+) [>\]])/x;
 
 sub new {
   my ($class, %arg) = @_;

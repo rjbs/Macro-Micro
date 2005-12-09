@@ -42,3 +42,9 @@ END_TEXT
 $expander->expand_macros_in(\$text, { edge => 2 });
 
 is($text, $expected, "expansion worked as planned");
+
+is(
+  $expander->expand_macros("[TURN_ONS] \\[TURN_OFFS]"),
+  "50,000 volts \\[TURN_OFFS]",
+  "allow escaped macros"
+);
