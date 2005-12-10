@@ -1,5 +1,8 @@
 Revision history for Macro-Micro
 
+0.02    2005-12-09
+        allow undef values for expansion -- just don't alter them
+
 0.01    2005-12-07
         first release
 
