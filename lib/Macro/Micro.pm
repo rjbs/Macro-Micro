@@ -11,13 +11,13 @@ Macro::Micro - really simple templating for really simple templates
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
  $Id$
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
@@ -46,7 +46,7 @@ concept of context and lazy evaluation.
 
 =head2 C<new>
 
-  my $expander = Macros::Micro->new(%arg);
+  my $expander = Macro::Micro->new(%arg);
 
 This method creates a new macro expander.
 
@@ -54,12 +54,21 @@ There is only one valid argument:
 
   macro_format - this is the format for macros; see the macro_format method
 
+Because of memory leaks in perl 5.6, this method will return a
+Macro::Micro::perl56 object instead of a Macro::Micro object under versions
+prior to 5.8.
+
 =cut
 
 my $DEFAULT_MACRO_FORMAT = qr/(?<!\\)([\[<] (\w+) [>\]])/x;
 
 sub new {
   my ($class, %arg) = @_;
+
+  if (($class eq 'Macro::Micro') && ($] < 5.008)) {
+    require Macro::Micro::perl56;
+    $class = 'Macro::Micro::perl56';
+  }
 
   my $self = bless { } => $class;
 
@@ -221,19 +230,19 @@ sub fast_expander {
 
   my $regex = $self->macro_format;
 
+  my $expander = sub {
+    my $macro = $self->get_macro($_[1]);
+    return $_[0] unless $macro;
+    return ref $macro ? $macro->($_[1], $_[2], $stash) : $macro;
+  };
+
   my $applicator = sub {
     my ($object) = @_;
 
     return unless defined $object;
     Carp::croak "object of expansion must not be a reference" if ref $object;
 
-    my $expander = sub {
-      my $macro = $self->get_macro($_[1]);
-      return $_[0] unless $macro;
-      return ref $macro ? $macro->($_[1], $object, $stash) : $macro;
-    };
-
-    $object =~ s/$regex/$expander->($1,$2)/eg;
+    $object =~ s/$regex/$expander->($1,$2,$object)/eg;
 
     return $object;
   }

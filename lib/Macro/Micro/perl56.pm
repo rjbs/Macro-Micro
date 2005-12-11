@@ -12,56 +12,20 @@ Macro::Micro::perl56 - micro macros for perl 5.6
 
 =head1 VERSION
 
-version 0.02
-
  $Id: /my/icg/macexp/trunk/lib/Macro/Micro.pm 17183 2005-12-10T00:39:55.084057Z rjbs  $
-
-=cut
-
-our $VERSION = '0.02';
-
-=head1 SYNOPSIS
-
-  use Macro::Micro:perl56;
-
-  my $expander = Macro::Micro::perl56->new;
-
-  $expander->register_macros(
-    ALIGNMENT => "Lawful Good",
-    HEIGHT    => sub {
-      my ($macro, $object, $stash) = @_;
-      $stash->{race}->avg_height;
-    },
-  );
-
-  $expander->expand_macros_in($character, { race => $human_obj });
-
-  # character is now a Lawful Good, 5' 6" human
 
 =head1 DESCRIPTION
 
-This module performs very basic expansion of macros in text, with a very basic
-concept of context and lazy evaluation.
+Macro::Micro::perl56 implements a subset of Macro::Micro that does not leak
+insane amounts of memory on 5.6.x perls.  If you are going to use Macro::Micro
+on perl 5.6.x, you should use Macro::Micro::perl56.
 
-=head1 METHODS
+The main difference is that the C<fast_expander> method from Macro::Micro is
+implemented in terms of C<expand_macros> as opposed to the other way around.
+Also, C<fast_expander> is not actually faster than C<expand_macros>.
 
-=head2 C<expand_macros>
-
-  my $rewritten = $expander->expand_macros($text, \%stash);
-
-This method returns the result of rewriting the macros found the text.  The
-stash is a set of data that may be used to expand the macros.
-
-The text is scanned for content matching the expander's L</macro_format>.  If
-found, the macro name in the found content is looked up with C<L</get_macro>>.
-If a macro is found, it is used to replace the found content in the text.
-
-A macros whose value is text is expanded into that text.  A macros whose value
-is code is expanded by calling the code as follows:
-
- $replacement = $macro_value->($macro_name, $text, \%stash);
-
-Macros are not expanded recursively.
+While this is less efficient, it will I<not> leak huge heaps of memory, which
+is a nice benefit.
 
 =cut
 
@@ -81,6 +45,9 @@ sub expand_macros {
 
   $object =~ s/$regex/$expander->($1,$2)/eg;
 
+## I was afraid I'd have to further unroll the above into the following to
+## eliminate memory problems in 5.6.1; this didn't happen, but I'm leaving this
+## here for future reference, just in case!
 #  $object =~ s/$regex/
 #               my $macro = $self->get_macro($2);
 #               $macro ? (ref $macro ? $macro->($2, $object, $stash) : $macro)
@@ -88,19 +55,6 @@ sub expand_macros {
 
   return $object;
 }
-
-=head2 C<expand_macros_in>
-
-  $expander->expand_macros_in($object, \%stash);
-
-This rewrites the content of C<$object> in place, using the expander's macros
-and the provided stash of data.
-
-At present, only scalar references can be rewritten in place.  In the future,
-there will be a system to define how various classes of objects should be
-rewritten in place, such as email messages.
-
-=cut
 
 sub expand_macros_in {
   my ($self, $object, $stash) = @_;
@@ -112,19 +66,9 @@ sub expand_macros_in {
   $$object = $self->expand_macros($$object, $stash);
 }
 
-=head2 C<fast_expander>
-
-  my $fast_expander = $expander->fast_expander($stash);
-
-  my $rewritten_text = $fast_expander->($original_text);
-
-This method returns a closure which will expand the macros in text passed to
-it using the expander's macros and the passed-in stash.
-
-=cut
-
 sub fast_expander {
-  Carp::croak "Macro::Micro::perl56 cannot provide a fast expander";
+  my ($self, $stash) = @_;
+  return sub { $self->expand_macros($_[0], $stash) };
 }
 
 =head1 AUTHOR
