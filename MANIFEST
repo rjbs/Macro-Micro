@@ -11,3 +11,4 @@ t/cpp.t
 t/errors.t
 t/formats.t
 t/recurse.t
+META.yml                                 Module meta-data (added by MakeMaker)
