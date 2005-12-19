@@ -40,7 +40,7 @@ sub expand_macros {
   my $expander = sub {
     my $macro = $self->get_macro($_[1]);
     return $_[0] unless $macro;
-    return ref $macro ? $macro->($_[1], $object, $stash) : $macro;
+    return ref $macro ? $macro->($_[1], $object, $stash)||'' : $macro;
   };
 
   $object =~ s/$regex/$expander->($1,$2)/eg;

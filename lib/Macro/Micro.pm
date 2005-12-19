@@ -233,7 +233,7 @@ sub fast_expander {
   my $expander = sub {
     my $macro = $self->get_macro($_[1]);
     return $_[0] unless $macro;
-    return ref $macro ? $macro->($_[1], $_[2], $stash) : $macro;
+    return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
   };
 
   my $applicator = sub {
