@@ -39,7 +39,7 @@ sub expand_macros {
 
   my $expander = sub {
     my $macro = $self->get_macro($_[1]);
-    return $_[0] unless $macro;
+    return $_[0] unless defined $macro;
     return ref $macro ? $macro->($_[1], $object, $stash)||'' : $macro;
   };
 

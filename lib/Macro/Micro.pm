@@ -232,7 +232,7 @@ sub fast_expander {
 
   my $expander = sub {
     my $macro = $self->get_macro($_[1]);
-    return $_[0] unless $macro;
+    return $_[0] unless defined $macro;
     return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
   };
 

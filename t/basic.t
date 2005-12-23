@@ -15,6 +15,9 @@ for my $class ('Macro::Micro', 'Macro::Micro::perl56') {
 
   isa_ok($expander, $class);
 
+  # because on 5.6 we want to test the non-5.6, too (lame)
+  bless $expander => $class;
+
   can_ok($expander, 'register_macros');
 
   $expander->register_macros(
@@ -23,6 +26,7 @@ for my $class ('Macro::Micro', 'Macro::Micro::perl56') {
     TURN_OFFS         => "electromagnetic pulses",
     qr/SECRET_\w+/    => sub { "(secret macro! $_[0]!)" },
     AREA_OF_FLATHEAD  => sub { ($_[2]->{edge}||0) ** 2 },
+    SILENCE           => '',
   );
 
   my $text = <<END_TEXT;
@@ -51,5 +55,11 @@ END_TEXT
     $expander->expand_macros("[TURN_ONS] \\[TURN_OFFS]"),
     "50,000 volts \\[TURN_OFFS]",
     "allow escaped macros"
+  );
+
+  is(
+    $expander->expand_macros("[SILENCE]"),
+    "",
+    "a macro can expand to ''"
   );
 }
