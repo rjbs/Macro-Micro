@@ -1,5 +1,8 @@
 Revision history for Macro-Micro
 
+0.04    2005-12-22
+        allow "" as a macro value
+
 0.03    2005-12-10
         provide ::perl56 for 5.6.1 use without memory leaks
         fast_expander is faster (it encloses, rather than constructs, its
