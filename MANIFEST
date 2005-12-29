@@ -3,6 +3,7 @@ MANIFEST
 Makefile.PL
 README
 lib/Macro/Micro.pm
+lib/Macro/Micro/perl56.pm
 t/00-load.t
 t/pod-coverage.t
 t/pod.t
