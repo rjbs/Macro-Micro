@@ -44,7 +44,7 @@ concept of context and lazy evaluation.
 
 =head1 METHODS
 
-=head2 C<new>
+=head2 new
 
   my $expander = Macro::Micro->new(%arg);
 
@@ -79,7 +79,7 @@ sub new {
   return $self;
 }
 
-=head2 C<macro_format>
+=head2 macro_format
 
   $expander->macro_format( qr/.../ );
 
@@ -106,7 +106,7 @@ sub macro_format {
   $self->{macro_format} = $macro_format;
 }
 
-=head2 C<register_macros>
+=head2 register_macros
 
   $expander->register_macros($name => $value, ... );
 
@@ -131,14 +131,34 @@ sub register_macros {
     } elsif (ref $name eq 'Regexp') {
       $self->{macro_regexp}{$name} = [ $name, $value ];
     } else {
-      Carp::croak "macro name '$name' must be a string or regexp reference";
+      Carp::croak "macro name '$name' must be a string or a regexp";
     }
   }
 
   return $self;
 }
 
-=head2 C<get_macro>
+=head2 clear_macros
+
+  $expander->clear_macros;
+
+This method clears all registered macros.
+
+=cut
+
+sub clear_macros {
+  my ($self, @macros) = @_;
+
+  if (@macros) {
+    Carp::croak "partial deletion not implemented";
+  } else {
+    delete @$self{qw(macro macro_regexp)};
+  }
+
+  return;
+}
+
+=head2 get_macro
 
   my $macro = $expander->get_macro($macro_name);
 
@@ -163,7 +183,7 @@ sub get_macro {
   return;
 }
 
-=head2 C<expand_macros>
+=head2 expand_macros
 
   my $rewritten = $expander->expand_macros($text, \%stash);
 
@@ -186,10 +206,20 @@ Macros are not expanded recursively.
 sub expand_macros {
   my ($self, $object, $stash) = @_;
 
+  if (eval { $object->isa('Macro::Micro::Template') }) {
+    # expects to be passed ($whole_macro, $macro_inside_delim, $whole_text)
+    my $expander = sub {
+      my $macro = $self->get_macro($_[1]);
+      return $_[0] unless defined $macro;
+      return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
+    };
+
+    return join '', map { ref $_ ? $expander->(@$_, $stash) : $_ } @$object;
+  }
   $self->fast_expander($stash)->($object);
 }
 
-=head2 C<expand_macros_in>
+=head2 expand_macros_in
 
   $expander->expand_macros_in($object, \%stash);
 
@@ -214,7 +244,7 @@ sub expand_macros_in {
   $$object = $fast_expander->($$object);
 }
 
-=head2 C<fast_expander>
+=head2 fast_expander
 
   my $fast_expander = $expander->fast_expander($stash);
 
@@ -230,6 +260,7 @@ sub fast_expander {
 
   my $regex = $self->macro_format;
 
+  # expects to be passed ($whole_macro, $macro_inside_delim, $whole_text)
   my $expander = sub {
     my $macro = $self->get_macro($_[1]);
     return $_[0] unless defined $macro;
@@ -248,9 +279,35 @@ sub fast_expander {
   }
 }
 
+=head2 study
+
+  my $template = $expander->study($text);
+
+Given a string, this returns an object which can be used as an argument to
+C<expand_macros>.  Macro::Micro will find and mark the locations of macros in
+the text so that calls to expand the macros will not need to search the text.
+
+=cut
+
+sub study {
+  my ($self, $text) = @_;
+
+  my $macro_format = $self->macro_format;
+
+  my @total;
+
+  while ($text =~ /\G(.*?)$macro_format/smg) {
+    my ($snippet, $whole, $name) = ($1, $2, $3);
+    push @total, (length $snippet ? $snippet : ()),
+                 ($whole ? [ $whole, $name ] : ());
+  }
+
+  bless \@total => 'Macro::Micro::Template';
+}
+
 =head1 AUTHOR
 
-Ricardo Signes, C<< <rjbs@cpan.org> >>
+Ricardo SIGNES, C<< <rjbs@cpan.org> >>
 
 =head1 BUGS
 
@@ -261,7 +318,7 @@ notified of progress on your bug as I make changes.
 
 =head1 COPYRIGHT
 
-Copyright 2005 Ricardo Signes, All Rights Reserved.
+Copyright 2005-2006 Ricardo SIGNES, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
