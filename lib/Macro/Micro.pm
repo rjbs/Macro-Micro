@@ -296,11 +296,12 @@ sub study {
 
   my @total;
 
-  while ($text =~ /\G(.*?)$macro_format/smg) {
+  while ($text =~ s/\A(.*?)$macro_format//sm) {
     my ($snippet, $whole, $name) = ($1, $2, $3);
     push @total, (length $snippet ? $snippet : ()),
                  ($whole ? [ $whole, $name ] : ());
   }
+  push @total, $text if length $text;
 
   bless \@total => 'Macro::Micro::Template';
 }

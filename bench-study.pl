@@ -116,7 +116,6 @@ for (1 .. 10000) {
 
   (secret macro! SECRET_YOUR_FACE!)
 END_TEXT
-  chomp $expected; # XXX why do I need this?
 
   is($filled_in, $expected, "we filled in a studied string");
 }

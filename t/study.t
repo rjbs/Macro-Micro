@@ -14,6 +14,7 @@ my $text = <<END_TEXT;
   My head, which is flat, is [AREA_OF_FLATHEAD] square inches in area.
 
   <SECRET_YOUR_FACE>
+  SNXBLORT
 END_TEXT
 
 my $expander = Macro::Micro->new;
@@ -42,8 +43,8 @@ my $template = $expander->study($text);
   My head, which is flat, is 4 square inches in area.
 
   (secret macro! SECRET_YOUR_FACE!)
+  SNXBLORT
 END_TEXT
-  chomp $expected; # XXX why do I need this?
 
   is($filled_in, $expected, "we filled in a studied string");
 }
