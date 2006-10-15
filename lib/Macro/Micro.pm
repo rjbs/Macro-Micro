@@ -11,13 +11,13 @@ Macro::Micro - really simple templating for really simple templates
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
  $Id$
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 SYNOPSIS
 
@@ -197,7 +197,7 @@ If a macro is found, it is used to replace the found content in the text.
 A macros whose value is text is expanded into that text.  A macros whose value
 is code is expanded by calling the code as follows:
 
- $replacement = $macro_value->($macro_name, $text, \%stash);
+  $replacement = $macro_value->($macro_name, $text, \%stash);
 
 Macros are not expanded recursively.
 
