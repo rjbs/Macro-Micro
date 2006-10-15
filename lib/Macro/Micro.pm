@@ -207,16 +207,23 @@ sub expand_macros {
   my ($self, $object, $stash) = @_;
 
   if (eval { $object->isa('Macro::Micro::Template') }) {
-    # expects to be passed ($whole_macro, $macro_inside_delim, $whole_text)
-    my $expander = sub {
-      my $macro = $self->get_macro($_[1]);
-      return $_[0] unless defined $macro;
-      return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
-    };
-
-    return join '', map { ref $_ ? $expander->(@$_, $stash) : $_ } @$object;
+    return $self->_expand_template($object, $stash);
   }
+
   $self->fast_expander($stash)->($object);
+}
+
+sub _expand_template {
+  my ($self, $object, $stash) = @_;
+  # expects to be passed ($whole_macro, $macro_inside_delim, $whole_text)
+  my $expander = sub {
+    my $macro = $self->get_macro($_[1]);
+    return $_[0] unless defined $macro;
+    return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
+  };
+
+  return join '', map { ref $_ ? $expander->(@$_[0, 1], $object->_text) : $_ }
+                  $object->_parts;
 }
 
 =head2 expand_macros_in
@@ -296,14 +303,24 @@ sub study {
 
   my @total;
 
-  while ($text =~ s/\A(.*?)$macro_format//sm) {
+  my $pos;
+  while ($text =~ m/\G(.*?)$macro_format/gsm) {
     my ($snippet, $whole, $name) = ($1, $2, $3);
     push @total, (length $snippet ? $snippet : ()),
                  ($whole ? [ $whole, $name ] : ());
+    $pos = pos $text;
   }
-  push @total, $text if length $text;
 
-  bless \@total => 'Macro::Micro::Template';
+  push @total, substr $text, $pos if defined $pos;
+
+  return Macro::Micro::Template->_new(\$text, \@total);
+}
+
+{
+  package Macro::Micro::Template;
+  sub _new   { bless [ $_[1], $_[2] ] => $_[0] }
+  sub _parts { @{ $_[0][1] } }
+  sub _text  {    $_[0][0]   }
 }
 
 =head1 AUTHOR

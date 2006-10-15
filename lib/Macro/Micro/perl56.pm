@@ -32,6 +32,10 @@ is a nice benefit.
 sub expand_macros {
   my ($self, $object, $stash) = @_;
 
+  if (eval { $object->isa('Macro::Micro::Template') }) {
+    return $self->_expand_template($object, $stash);
+  }
+
   my $regex = $self->macro_format;
 
   return unless defined $object;
@@ -84,7 +88,7 @@ notified of progress on your bug as I make changes.
 
 =head1 COPYRIGHT
 
-Copyright 2005 Ricardo Signes, All Rights Reserved.
+Copyright 2005-2006 Ricardo Signes, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
