@@ -222,6 +222,8 @@ sub _expand_template {
     return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
   };
 
+  return ${ $object->_text } unless $object->_parts;
+
   return join '', map { ref $_ ? $expander->(@$_[0, 1], $object->_text) : $_ }
                   $object->_parts;
 }

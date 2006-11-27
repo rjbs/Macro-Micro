@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 10;
 
 BEGIN { use_ok('Macro::Micro'); }
 BEGIN { use_ok('Macro::Micro::perl56'); }
@@ -54,7 +54,15 @@ END_TEXT
     is($filled_in, $expected, "we filled in a studied string");
   }
 
-  my $mantra = 'Hello, sailor.';
-  my $template_no_macros = $expander->study($mantra);
-  is($expander->expand_macros($mantra), $mantra, "no macros = same string");
+  my %stay_same = (
+    'no macros' => 'Hello, sailor.',
+    'open <'    => '<UNFINISHED macro=',
+    'XML DTD'   => '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">',
+  );
+
+  for my $desc (keys %stay_same) {
+    my $string = $stay_same{ $desc };
+    my $template_no_macros = $expander->study($string);
+    is($expander->expand_macros($string), $string, "$desc, same string");
+  }
 }
