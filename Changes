@@ -1,5 +1,12 @@
 Revision history for Macro-Micro
 
+0.051   2007-02-24
+        fix packaging       
+
+0.05    2006-10-15
+        add a clear_macros method
+        add "study" and M-M-Templates
+
 0.04    2005-12-22
         allow "" as a macro value
         fix manifest

@@ -14,4 +14,6 @@ WriteMakefile(
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Macro-Micro-* cover_db' },
+
+    (eval { ExtUtils::MakeMaker->VERSION(6.21) } ? (LICENSE => 'perl') : ()),
 );
