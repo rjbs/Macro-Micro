@@ -11,13 +11,11 @@ Macro::Micro - really simple templating for really simple templates
 
 =head1 VERSION
 
-version 0.051
-
- $Id$
+version 0.052
 
 =cut
 
-our $VERSION = '0.051';
+our $VERSION = '0.052';
 
 =head1 SYNOPSIS
 
@@ -121,8 +119,8 @@ These macros may later be used for expansion by C<L</expand_macros>>.
 sub register_macros {
   my ($self, @macros) = @_;
 
-  while (@macros) {
-    my ($name, $value) = splice @macros, 0, 2;
+  for (my $i = 0; $i < @macros; $i += 2) {
+    my ($name, $value) = @macros[ $i, $i+1 ];
     Carp::croak "macro value must be a string or code reference"
       if (ref $value) and (ref $value ne 'CODE');
 
