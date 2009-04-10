@@ -16,4 +16,12 @@ WriteMakefile(
     clean               => { FILES => 'Macro-Micro-* cover_db' },
 
     (eval { ExtUtils::MakeMaker->VERSION(6.21) } ? (LICENSE => 'perl') : ()),
+    (eval { ExtUtils::MakeMaker->VERSION(6.46) }
+      ? (META_MERGE => {
+          resources => {
+            repository => 'http://github.com/rjbs/email-mime'
+          }
+        })
+      : ()
+    ),
 );

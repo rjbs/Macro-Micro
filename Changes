@@ -1,5 +1,8 @@
 Revision history for Macro-Micro
 
+0.053   2009-04-10
+        drop support for perl5 v6
+
 0.052   2008-10-22
         replace splicing while loop with for loop
 

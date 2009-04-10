@@ -52,21 +52,12 @@ There is only one valid argument:
 
   macro_format - this is the format for macros; see the macro_format method
 
-Because of memory leaks in perl 5.6, this method will return a
-Macro::Micro::perl56 object instead of a Macro::Micro object under versions
-prior to 5.8.
-
 =cut
 
 my $DEFAULT_MACRO_FORMAT = qr/(?<!\\)([\[<] (\w+) [>\]])/x;
 
 sub new {
   my ($class, %arg) = @_;
-
-  if (($class eq 'Macro::Micro') && ($] < 5.008)) {
-    require Macro::Micro::perl56;
-    $class = 'Macro::Micro::perl56';
-  }
 
   my $self = bless { } => $class;
 
