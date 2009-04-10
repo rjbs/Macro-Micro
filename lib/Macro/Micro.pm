@@ -11,11 +11,11 @@ Macro::Micro - really simple templating for really simple templates
 
 =head1 VERSION
 
-version 0.052
+version 0.053
 
 =cut
 
-our $VERSION = '0.052';
+our $VERSION = '0.053';
 
 =head1 SYNOPSIS
 
