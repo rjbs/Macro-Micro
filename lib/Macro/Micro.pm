@@ -44,9 +44,9 @@ concept of context and lazy evaluation.
 
 =head2 new
 
-  my $expander = Macro::Micro->new(%arg);
+  my $mm = Macro::Micro->new(%arg);
 
-This method creates a new macro expander.
+This method creates a new Macro::Micro object.
 
 There is only one valid argument:
 
@@ -70,12 +70,13 @@ sub new {
 
 =head2 macro_format
 
-  $expander->macro_format( qr/.../ );
+  $mm->macro_format( qr/.../ );
 
-This method returns the macro format regexp for the expander.  It must be a
-reference to a regular expression, and should have two capture groups.  The
-first should return the entire string to be replaced in the text, and the
-second the name of the macro found.
+This method gets or sets the macro format regexp for the expander.
+
+The format must be a reference to a regular expression, and should have two
+capture groups.  The first should return the entire string to be replaced in
+the text, and the second the name of the macro found.
 
 The default macro format is:  C<< qr/([\[<] (\w+) [>\]])/x >>
 
@@ -97,7 +98,7 @@ sub macro_format {
 
 =head2 register_macros
 
-  $expander->register_macros($name => $value, ... );
+  $mm->register_macros($name => $value, ... );
 
 This method register one or more macros for later expansion.  The macro names
 must be either strings or a references to regular expression.  The values may
@@ -129,7 +130,7 @@ sub register_macros {
 
 =head2 clear_macros
 
-  $expander->clear_macros;
+  $mm->clear_macros;
 
 This method clears all registered macros.
 
@@ -149,7 +150,7 @@ sub clear_macros {
 
 =head2 get_macro
 
-  my $macro = $expander->get_macro($macro_name);
+  my $macro = $mm->get_macro($macro_name);
 
 This returns the currently-registered value for the named macro.  If the given
 macro name is not registered exactly, the name is checked against any regular
@@ -174,7 +175,7 @@ sub get_macro {
 
 =head2 expand_macros
 
-  my $rewritten = $expander->expand_macros($text, \%stash);
+  my $rewritten = $mm->expand_macros($text, \%stash);
 
 This method returns the result of rewriting the macros found the text.  The
 stash is a set of data that may be used to expand the macros.
@@ -219,7 +220,7 @@ sub _expand_template {
 
 =head2 expand_macros_in
 
-  $expander->expand_macros_in($object, \%stash);
+  $mm->expand_macros_in($object, \%stash);
 
 This rewrites the content of C<$object> in place, using the expander's macros
 and the provided stash of data.
@@ -242,28 +243,24 @@ sub expand_macros_in {
   $$object = $fast_expander->($$object);
 }
 
-=head2 fast_expander
+=head2 string_expander
 
-  my $fast_expander = $expander->fast_expander($stash);
+  my $string_expander = $mm->string_expander($stash);
 
-  my $rewritten_text = $fast_expander->($original_text);
+  my $rewritten_text = $string_expander->($original_text);
 
 This method returns a closure which will expand the macros in text passed to
 it using the expander's macros and the passed-in stash.
 
+C<fast_expander> is provided as an alias for legacy code.
+
 =cut
 
-sub fast_expander {
+sub string_expander {
   my ($self, $stash) = @_;
 
-  my $regex = $self->macro_format;
-
-  # expects to be passed ($whole_macro, $macro_inside_delim, $whole_text)
-  my $expander = sub {
-    my $macro = $self->get_macro($_[1]);
-    return $_[0] unless defined $macro;
-    return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
-  };
+  my $expander = $self->macro_expander($stash);
+  my $regex    = $self->macro_format;
 
   my $applicator = sub {
     my ($object) = @_;
@@ -271,11 +268,38 @@ sub fast_expander {
     return unless defined $object;
     Carp::croak "object of expansion must not be a reference" if ref $object;
 
-    $object =~ s/$regex/$expander->($1,$2,$object)/eg;
+    $object =~ s/$regex/$expander->($1,$2)/eg;
 
     return $object;
   }
 }
+
+BEGIN { *fast_expander = \&string_expander }
+
+=head2 macro_expander
+
+  my $macro_expander = $mm->macro_expander(\%stash);
+
+This method returns a coderef that can be called as follows:
+
+  $macro_expander->($macro_string, $macro_name);
+
+It should return the string to be used to replace the macro string that was
+found.
+
+=cut
+
+sub macro_expander {
+  my ($self, $stash) = @_;
+
+  # expects to be passed ($whole_macro, $macro_inside_delim)
+  sub {
+    my $macro = $self->get_macro($_[1]);
+    return $_[0] unless defined $macro;
+    return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
+  };
+}
+
 
 =head2 study
 
