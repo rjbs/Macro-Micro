@@ -292,12 +292,35 @@ found.
 sub macro_expander {
   my ($self, $stash) = @_;
 
-  # expects to be passed ($whole_macro, $macro_inside_delim)
-  sub {
-    my $macro = $self->get_macro($_[1]);
-    return $_[0] unless defined $macro;
-    return ref $macro ? $macro->($_[1], $_[2], $stash)||'' : $macro;
-  };
+  my %cached;
+
+  if (values %{ $self->{macro_regexp} }) {
+    return sub {
+      return $cached{ $_[0] } if defined $cached{ $_[0] };
+
+      my $macro = $self->get_macro($_[1]);
+
+      $cached{ $_[0] } = defined $macro
+                       ? ref $macro
+                         ? $macro->($_[1], $_[2], $stash)||'' : $macro
+                       : $_[0];
+
+      return $cached{ $_[0] };
+    };
+  } else {
+    return sub {
+      return $cached{ $_[0] } if defined $cached{ $_[0] };
+
+      my $macro = $self->{macro}{ $_[1] };
+
+      $cached{ $_[0] } = defined $macro
+                       ? ref $macro
+                         ? $macro->($_[1], $_[2], $stash)||'' : $macro
+                       : $_[0];
+
+      return $cached{ $_[0] };
+    };
+  }
 }
 
 

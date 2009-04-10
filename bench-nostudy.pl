@@ -59,7 +59,8 @@ my @macros = (
   FAVORITE_BEVERAGE => sub { "hot tea" },
   TURN_ONS          => "50,000 volts",
   TURN_OFFS         => "electromagnetic pulses",
-  qr/SECRET_\w+/    => sub { "(secret macro! $_[0]!)" },
+  # qr/SECRET_\w+/    => sub { "(secret macro! $_[0]!)" },
+  SECRET_YOUR_FACE  => "(secret macro! SECRET_YOUR_FACE!)",
   AREA_OF_FLATHEAD  => sub { ($_[2]->{edge}||0) ** 2 },
   SILENCE           => '',
 );
