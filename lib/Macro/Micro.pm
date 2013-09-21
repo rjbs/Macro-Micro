@@ -1,21 +1,9 @@
-package Macro::Micro;
-
-use warnings;
 use strict;
+use warnings;
+package Macro::Micro;
+# ABSTRACT: really simple templating for really simple templates
 
 use Carp ();
-
-=head1 NAME
-
-Macro::Micro - really simple templating for really simple templates
-
-=head1 VERSION
-
-version 0.053
-
-=cut
-
-our $VERSION = '0.053';
 
 =head1 SYNOPSIS
 
@@ -40,9 +28,7 @@ our $VERSION = '0.053';
 This module performs very basic expansion of macros in text, with a very basic
 concept of context and lazy evaluation.
 
-=head1 METHODS
-
-=head2 new
+=method new
 
   my $mm = Macro::Micro->new(%arg);
 
@@ -68,7 +54,7 @@ sub new {
   return $self;
 }
 
-=head2 macro_format
+=method macro_format
 
   $mm->macro_format( qr/.../ );
 
@@ -96,7 +82,7 @@ sub macro_format {
   $self->{macro_format} = $macro_format;
 }
 
-=head2 register_macros
+=method register_macros
 
   $mm->register_macros($name => $value, ... );
 
@@ -128,7 +114,7 @@ sub register_macros {
   return $self;
 }
 
-=head2 clear_macros
+=method clear_macros
 
   $mm->clear_macros;
 
@@ -148,7 +134,7 @@ sub clear_macros {
   return;
 }
 
-=head2 get_macro
+=method get_macro
 
   my $macro = $mm->get_macro($macro_name);
 
@@ -173,7 +159,7 @@ sub get_macro {
   return;
 }
 
-=head2 expand_macros
+=method expand_macros
 
   my $rewritten = $mm->expand_macros($text, \%stash);
 
@@ -218,7 +204,7 @@ sub _expand_template {
                   $object->_parts;
 }
 
-=head2 expand_macros_in
+=method expand_macros_in
 
   $mm->expand_macros_in($object, \%stash);
 
@@ -243,7 +229,7 @@ sub expand_macros_in {
   $$object = $fast_expander->($$object);
 }
 
-=head2 string_expander
+=method string_expander
 
   my $string_expander = $mm->string_expander($stash);
 
@@ -276,7 +262,7 @@ sub string_expander {
 
 BEGIN { *fast_expander = \&string_expander }
 
-=head2 macro_expander
+=method macro_expander
 
   my $macro_expander = $mm->macro_expander(\%stash);
 
@@ -324,7 +310,7 @@ sub macro_expander {
 }
 
 
-=head2 study
+=method study
 
   my $template = $expander->study($text);
 
@@ -360,25 +346,5 @@ sub study {
   sub _parts { @{ $_[0][1] } }
   sub _text  {    $_[0][0]   }
 }
-
-=head1 AUTHOR
-
-Ricardo SIGNES, C<< <rjbs@cpan.org> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to
-C<bug-macro-micro@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be
-notified of progress on your bug as I make changes.
-
-=head1 COPYRIGHT
-
-Copyright 2005-2006 Ricardo SIGNES, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-=cut
 
 "[MAGIC_TRUE_VALUE]";
